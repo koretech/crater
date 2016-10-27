@@ -7,12 +7,15 @@ import HappyPack from 'happypack'
 import ProgressBarPlugin from 'progress-bar-webpack-plugin'
 import MeteorImportsPlugin from 'meteor-imports-webpack-plugin'
 import cssModulesValues from 'postcss-modules-values'
+import LessPluginAutoPrefix from 'less-plugin-autoprefix'
 import buildDir from '../buildDir'
 
 const root = path.resolve(__dirname, '..')
 const srcDir = path.resolve(root, 'src')
 const globalCSS = path.join(srcDir, 'styles', 'global')
 const clientInclude = [srcDir]
+
+const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4']
 
 const vendor = [
   'react',
@@ -46,6 +49,9 @@ const config = {
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.MinChunkSizePlugin({ minChunkSize: 50000 }),
     new webpack.NoErrorsPlugin(),
+    new webpack.ProvidePlugin({
+      jQuery: 'jquery',
+    }),
     new AssetsPlugin({ path: buildDir, filename: 'assets.json' }),
     new webpack.DefinePlugin({
       '__CLIENT__': true,
@@ -68,6 +74,11 @@ const config = {
     }),
   ],
   postcss: [cssModulesValues],
+  lessLoader: {
+    lessPlugins: [
+      new LessPluginAutoPrefix({browsers: autoprefixerBrowsers}),
+    ],
+  },
   module: {
     loaders: [
       { test: /\.json$/, loader: 'json-loader', exclude: [
@@ -87,6 +98,11 @@ const config = {
         test: /\.css$/,
         loader: 'style!css',
         include: globalCSS,
+      },
+      {
+        test: /\.less$/,
+        loader: 'style!css!less',
+        include: clientInclude,
       },
       {
         test: /\.js$/,

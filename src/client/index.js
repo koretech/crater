@@ -6,6 +6,8 @@ import { AppContainer } from 'react-hot-loader'
 import { Map as iMap } from 'immutable'
 import makeStore from './makeStore'
 import Root from './Root'
+import '../styles/semantic/semantic.js';
+import '../styles/semantic/semantic.less';
 
 Meteor.startup(() => {
   const { router } = window.__INITIAL_STATE__
